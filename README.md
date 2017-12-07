@@ -1,0 +1,1 @@
+A Spring Boot Application skeleton embedding Cucumber, AspectJ and JUnit
