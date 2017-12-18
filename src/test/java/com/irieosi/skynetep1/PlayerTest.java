@@ -10,15 +10,6 @@ import java.util.Scanner;
 
 public class PlayerTest {
 
-
-    @Test
-    public void should_create_three_nodes_and_no_gateway() {
-        List<Integer> gatewayIds = new ArrayList<>();
-        int nbNodes = 3;
-
-        Assertions.assertThat(Player.createNodes(nbNodes, gatewayIds)).hasSize(nbNodes);
-    }
-
     @Test
     public void should_create_a_gateway_on_node_of_id_2() {
         String input = "2\n";
@@ -32,16 +23,6 @@ public class PlayerTest {
         Assertions.assertThat(gateways.get(0)).isEqualTo(2);
     }
 
-    @Test
-    public void should_create_three_nodes_with_one_as_gateway() {
-        List<Integer> gateways = new ArrayList<>();
-        int nbNodes = 3;
-
-        gateways.add(2);
-
-        List<Node> nodes = Player.createNodes(nbNodes, gateways);
-        Assertions.assertThat(nodes.get(2).isGateway()).isTrue();
-    }
 
     @Test
     public void should_create_a_link_between_node_of_id_1_and_node_of_id_2() {
@@ -53,8 +34,8 @@ public class PlayerTest {
         List<Link> links = Player.createLinks(in, nbLinks);
         Link link = links.get(0);
 
-        Assertions.assertThat(link.getOrigin()).isEqualTo(1);
-        Assertions.assertThat(link.getDestination()).isEqualTo(2);
+        Assertions.assertThat(link.getNode1()).isEqualTo(1);
+        Assertions.assertThat(link.getNode2()).isEqualTo(2);
     }
 
     @Test
@@ -82,8 +63,8 @@ public class PlayerTest {
         List<Link> immediateDeadEnds = Player.determineImmediateDeadEnds(deadEnds, agentPosition);
 
         Assertions.assertThat(immediateDeadEnds).hasSize(1);
-        Assertions.assertThat(immediateDeadEnds.get(0).getOrigin()).isEqualTo(4);
-        Assertions.assertThat(immediateDeadEnds.get(0).getDestination()).isEqualTo(5);
+        Assertions.assertThat(immediateDeadEnds.get(0).getNode1()).isEqualTo(4);
+        Assertions.assertThat(immediateDeadEnds.get(0).getNode2()).isEqualTo(5);
     }
 
     @Test

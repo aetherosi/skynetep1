@@ -1,12 +1,11 @@
 package com.irieosi.skynetep1;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
-/**
- * Auto-generated code below aims at helping you parse
- * the standard input according to the problem statement.
- **/
+
 class Player {
 
     public static void main(String args[]) {
@@ -21,7 +20,6 @@ class Player {
 
         List<Integer> gateways = createGateways(in, nbGateways);
 
-        List<Node> nodes = createNodes(nbNodes, gateways);
 
         // game loop
         while (true) {
@@ -40,41 +38,26 @@ class Player {
     }
 
     public static List<Link> createLinks(Scanner in, int nbLinks) {
-
         List<Link> links = new ArrayList<>();
         for (int i = 0; i < nbLinks; i++) {
-            int originNodeId = in.nextInt(); // N1 and N2 defines a link between these nodes
-            int destinationNodeId = in.nextInt();
-            Link link = new Link(originNodeId, destinationNodeId);
+            int node1 = in.nextInt();
+            int node2 = in.nextInt();
+            Link link = new Link(node1, node2);
 
             links.add(link);
         }
         return links;
     }
 
-    public static List<Node> createNodes(int nbNodes, List<Integer> gateways) {
-        List<Node> nodes = new ArrayList<>();
-        for (int i = 0; i < nbNodes ; i++) {
-            Node node = new Node(0);
-            if (gateways.contains(i)) {
-                node.setGateway(true);
-            }
-            nodes.add(node);
-        }
-
-        return nodes;
-    }
-
-
     public static List<Link> determineDeadEnds(List<Link> links, List<Integer> gateways) {
         return links.stream()
-                .filter(link -> gateways.contains(link.getOrigin()) || gateways.contains(link.getDestination()))
+                .filter(link -> gateways.contains(link.getNode1()) || gateways.contains(link.getNode2()))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public static List<Link> determineImmediateDeadEnds(List<Link> links, int agentPosition) {
         return links.stream()
-                .filter(link -> (link.getOrigin() == agentPosition) || (link.getDestination() == agentPosition))
+                .filter(link -> (link.getNode1() == agentPosition) || (link.getNode2() == agentPosition))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
