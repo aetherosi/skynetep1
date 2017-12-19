@@ -11,20 +11,22 @@ class Player {
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
 
-        int nbNodes = in.nextInt(); // the total number of nodes in the level, including the gateways
-        int nbLinks = in.nextInt(); // the number of remainingLinks
-        int nbGateways = in.nextInt(); // the number of exit gateways
-
+        int nbNodes = in.nextInt();
+        int nbLinks = in.nextInt();
+        int nbGateways = in.nextInt();
 
         List<Link> remainingLinks = createLinks(in, nbLinks);
-
         List<Integer> gateways = createGateways(in, nbGateways);
 
-
-        // game loop
         while (true) {
-            int agentPosition = in.nextInt(); // The index of the node on which the Skynet agent is positioned this turn
+            int agentPosition = in.nextInt();
 
+            List<Link> neighbours = getNeighbours(remainingLinks, agentPosition);
+            List<Link> gatewayLinks = getGateways(neighbours, gateways);
+
+            Link link = determineLinkToSever(neighbours, gatewayLinks);
+
+            remainingLinks = severLink(link, remainingLinks);
         }
     }
 
@@ -49,28 +51,29 @@ class Player {
         return links;
     }
 
-    public static List<Link> determineDeadEnds(List<Link> links, List<Integer> gateways) {
+    public static Link determineLinkToSever(List<Link> neighbours, List<Link> gatewayLinks) {
+        if (gatewayLinks.size() > 0) {
+            return gatewayLinks.get(0);
+        } else {
+            return neighbours.get(0);
+        }
+    }
+
+    public static List<Link> getGateways(List<Link> links, List<Integer> gateways) {
         return links.stream()
                 .filter(link -> gateways.contains(link.getNode1()) || gateways.contains(link.getNode2()))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public static List<Link> determineImmediateDeadEnds(List<Link> links, int agentPosition) {
+    public static List<Link> getNeighbours(List<Link> links, int agentPosition) {
         return links.stream()
                 .filter(link -> (link.getNode1() == agentPosition) || (link.getNode2() == agentPosition))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public static List<Link> cutLink(Link linkToCut, List<Link> links) {
-        links.remove(linkToCut);
+    public static List<Link> severLink(Link linkToSever, List<Link> links) {
+        links.remove(linkToSever);
         return links;
     }
 
-    public static Link determineLinkToCut(List<Link> deadEnds, List<Link> immediateDeadEnds) {
-        if (immediateDeadEnds.size() > 0) {
-            return immediateDeadEnds.get(0);
-        } else {
-            return deadEnds.get(0);
-        }
-    }
 }

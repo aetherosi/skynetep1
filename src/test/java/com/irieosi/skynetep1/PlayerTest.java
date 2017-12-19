@@ -3,10 +3,7 @@ package com.irieosi.skynetep1;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class PlayerTest {
 
@@ -22,7 +19,6 @@ public class PlayerTest {
         Assertions.assertThat(gateways).hasSize(nbGateways);
         Assertions.assertThat(gateways.get(0)).isEqualTo(2);
     }
-
 
     @Test
     public void should_create_a_link_between_node_of_id_1_and_node_of_id_2() {
@@ -40,57 +36,56 @@ public class PlayerTest {
 
     @Test
     public void should_return_all_links_leading_to_a_gateway() {
-        List<Integer> gateways = Arrays.asList(3);
+        List<Integer> gateways = Collections.singletonList(3);
         List<Link> links = new ArrayList<>();
         links.add(new Link(1, 2));
         links.add(new Link(2, 3));
 
-
-
-        List<Link> deadEnds = Player.determineDeadEnds(links, gateways);
+        List<Link> deadEnds = Player.getGateways(links, gateways);
 
         Assertions.assertThat(deadEnds).hasSize(1);
     }
 
     @Test
-    public void should_return_all_links_directly_leading_to_a_gateway_according_to_the_agent_position() {
-        List<Link> deadEnds = new ArrayList<>();
-        int agentPosition = 5;
-        deadEnds.add(new Link(0, 2));
-        deadEnds.add(new Link(3, 4));
-        deadEnds.add(new Link(4, 5));
-
-        List<Link> immediateDeadEnds = Player.determineImmediateDeadEnds(deadEnds, agentPosition);
-
-        Assertions.assertThat(immediateDeadEnds).hasSize(1);
-        Assertions.assertThat(immediateDeadEnds.get(0).getNode1()).isEqualTo(4);
-        Assertions.assertThat(immediateDeadEnds.get(0).getNode2()).isEqualTo(5);
-    }
-
-    @Test
-    public void should_determine_which_link_to_cut() {
-        List<Link> deadEnds = new ArrayList<>();
-        deadEnds.add(new Link(2, 5));
-        deadEnds.add(new Link(1, 3));
-
-        List<Link> immediateDeadEnds = new ArrayList<>();
-        Link linkToCut = new Link(0, 2);
-        immediateDeadEnds.add(linkToCut);
-
-
-        Assertions.assertThat(Player.determineLinkToCut(deadEnds, immediateDeadEnds)).isEqualTo(linkToCut);
-
-    }
-
-    @Test
-    public void should_severe_a_link() {
+    public void should_return_all_neighbours__links_according_to_the_agent_position() {
         List<Link> links = new ArrayList<>();
-        Link linkToCut = new Link(0, 2);
-        links.add(linkToCut);
+        int agentPosition = 5;
+        links.add(new Link(0, 2));
         links.add(new Link(3, 4));
         links.add(new Link(4, 5));
 
-        Assertions.assertThat(Player.cutLink(linkToCut, links)).doesNotContain(linkToCut);
+        List<Link> neighbours = Player.getNeighbours(links, agentPosition);
+
+        Assertions.assertThat(neighbours).hasSize(1);
+        Assertions.assertThat(neighbours.get(0).getNode1()).isEqualTo(4);
+        Assertions.assertThat(neighbours.get(0).getNode2()).isEqualTo(5);
+
+    }
+
+    @Test
+    public void should_determine_which_link_to_sever_when_there_is_a_direct_link_to_a_gateway() {
+        List<Link> neighbours = new ArrayList<>();
+        neighbours.add(new Link(2, 5));
+        neighbours.add(new Link(1, 3));
+
+        List<Link> linksToGateway = new ArrayList<>();
+        Link linkToCut = new Link(0, 2);
+        linksToGateway.add(linkToCut);
+
+
+        Assertions.assertThat(Player.determineLinkToSever(neighbours, linksToGateway)).isEqualTo(linkToCut);
+
+    }
+
+    @Test
+    public void should_sever_a_link() {
+        List<Link> links = new ArrayList<>();
+        Link linkToSever = new Link(0, 2);
+        links.add(linkToSever);
+        links.add(new Link(3, 4));
+        links.add(new Link(4, 5));
+
+        Assertions.assertThat(Player.severLink(linkToSever, links)).doesNotContain(linkToSever);
     }
 
 
